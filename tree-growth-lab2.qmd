@@ -1,8 +1,15 @@
 ---
 title: "tree-growth-lab2"
 author: "Megan Hoover"
-html_document: 
+format:
+  html:
     toc: true
+knitr:
+  opts_chunk: 
+    echo: true
+    collapse: true
+    comment: "#>"
+  
  
 ---
 
