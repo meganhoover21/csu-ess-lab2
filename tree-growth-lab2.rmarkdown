@@ -6,54 +6,82 @@ html_document:
  
 ---
 
+
+
 ## Question 1: Read in the Minnesota tree growth dataset. Use glimpse to understand the structure and names of the dataset. Decribe the structure and what you see in the dataset?
+
+
 ```{r}
 library(tidyverse) #call tidyverse package
 tree_data<-read.csv(file.choose()) #read in the tree_dat csv and name
 glimpse(tree_data)
 str(tree_data)
 ```
+
+
 # The dataset is a dataframe structure that has 131,386 rows/observations and 8 columns/ variables. It has integers, characters, and numeric data. This dataset decribes chacrteristics of trees in Minnesota.
 
 ## Question 2: How many records have been made in stand 1?
+
+
 ```{r}
 filter(tree_data,standID ==1) %>%
   nrow()
 ```
+
+
 # 979 records have been made in stand 1
 
 
 #Question 3: How many records of the Abies balsamea and Pinus strobus species have been made?
+
+
 ```{r}
 filter(tree_data,species== "ABBA" | species== "PIST") %>% #ABBA is species code for Abies balsamea.PIST is code for pinus strobus
 nrow() #count the number of rows
 
 ```
+
+
 # 17,221 records have been made for the Abies balsamea and Pinus Strobus species
 
 ## Question 4: How many trees are older then 200 years old in the last year of the dataset?
+
+
 ```{r}
 filter(tree_data,max(year) & age>200) %>% #using 2 conditions to subset data
   nrow() #count the number of rows 
 ```
+
+
 # There are 181 trees that are older than 200 years old in the last year of the data set.
 
 ## Question 5: What is the oldest tree in the dataset found using slice_max?
+
+
 ```{r}
 tree_data %>% #starting off wit the tree data
   slice_max(age,n=1) #taking the max age of tree and showing top row
 ```
+
+
 # Pinus resinosa is the oldest tree in the dataset at 269 years old.
 
 ## Question 6: Find the oldest 5 trees recorded in 2001. Use the help docs to understand optional parameters
+
+
 ```{r}
 tree_data %>% #start with the tree data and pipe it
   filter(year==2001) %>% 
   slice_max(age,n=5) #in addition to the filtered year, taking the max age of the top 5.
 ```
+
+
 # In 2001, the five oldest trees were of the species Pinus resinosa and Fraxinus nigra. They had ages ranging from 206 to 263 years old.
 
 ## Question 7: Using slice_sample, how many trees are in a 30% sample of those recorded in 2002?
+
+
 ```{r}
 tree_data %>%
   filter(year == 2002) %>%    # Filter for records from 2002
@@ -61,18 +89,26 @@ tree_data %>%
 nrow()                         #counting rows of the sample
 
 ```
+
+
 # There are 687 trees in a 30% sample of those recorded in 2002.
 
 ## Question 8: Filter all trees in stand 5 in 2007. Sort this subset by descending radius at breast height (rad_ib) and use slice_head() to get the top three trees. Report the tree IDs
+
+
 ```{r}
 tree_data %>% #start with the tree data and pipe it
   filter(standID==5 & year==2007) %>% #filter by the standid and the year
   arrange(desc(rad_ib)) %>% #arrange from llargest to smallest breast height
   slice_head(n=3) #get the top 3 trees
 ```
+
+
 # The top three tree species in stand 5 in 2007, is Pinus strobus, Pinus resinosa, and followed by Picea mariana. This is based on the descending radius at breast height.
 
 ## Question 9: Reduce your full data.frame to [treeID, standID, year, and radius at breast height]. Filter to only those in stand 3 with records from 2007, and use slice_min to pull the smallest three trees meaured that year.
+
+
 ```{r}
 #select(data,column name,column name, column name, column name)
 #don't want permanent change yet, so no new data frame
@@ -84,7 +120,11 @@ tree_data %>%
 ```
 
 
+
+
 ## Question 10: Use select to remove the stand column. Use glimspe to show the dataset.
+
+
 ```{r}
 #copy above code with the change of removing standID. - sign means not to include
 tree_data %>%
@@ -95,7 +135,11 @@ tree_data %>%
 ```
 
 
+
+
 ## Question 11: Look at the help document for dplyr::select and examine the “Overview of selection features”. Identify an option (there are multiple) that would help select all columns with the string “ID” in the name. Using glimpse to view the remaining dataset
+
+
 ```{r}
 ?dplyr::select # info shows to use contains(): Contains a literal string.
 tree_data %>%
@@ -104,14 +148,22 @@ tree_data %>%
 
 ```
 
+
+
 ## Question 12: Find a selection pattern that captures all columns with either ‘ID’ or ‘stand’ in the name. Use glimpse to verify the selection.
+
+
 ```{r}
 tree_data %>%
   select(matches("ID|stand")) %>%        #matches(): Matches a regular expression.
    glimpse()                                   # | symbol for "or"
 ```
 
+
+
 ## Question 13: Looking back at the data dictionary, rename rad_ib and inc to include _[unit] in the name. Unlike earlier options, be sure that this renaming is permanent, and stays with your data.frame (e.g. <-). Use glimpse to view your new data.frame.
+
+
 ```{r}
 #lab notes show growth is in (mm) for both rad_ib and inc
 tree_data2<-tree_data %>%
@@ -120,9 +172,13 @@ tree_data2<-tree_data %>%
   glimpse()
 ```
 
+
+
 ## Question 14: A key measurement in forestry in “basal area column”. The metric is computed with the formula:
 BA(m2) = 0.00007854⋅DBH^2
 Where DBH is the diameter at breast height (cm). Use mutate to compute DBH in centimeters, and BA in m2 (HINT: Make sure rad_ib is in cm prior to computing the diameter!). What is the mean BA_m2 of the the species POTR in 2007?
+
+
 ```{r}
 #mutate() creates new columns (or modifies existing ones) and adds them to the right side of an existing data.frame
 #by using the <- symbol, it permanently adds the info.
@@ -135,9 +191,13 @@ tree_data2 %>%
   filter(species == "POTR" & year == 2007) %>%
   summarise(mean(BA_m2, na.rm = TRUE))
 ```
+
+
 # The mean BA_m2 of the the species POTR in 2007 is 0.03696619	
 
 ## Question 15: Lets say for the sake of our study, trees are not established until they are 5 years of age. Use if_else to add a boolean column to our dataset called established that is TRUE if the age is greater then 5 and FALSE if less then or equal to five. Once added, use count (see ?count) to determine how many records are from estabilshed trees?
+
+
 ```{r}
 #if_else(condition, true, false, missing = NULL), where condition is a logical vector created using one or more vectors and logical operators.
 # Add the 'established' column based on the age condition
@@ -148,6 +208,8 @@ tree_data2 <- tree_data2 %>%
 tree_data2 %>%
   count(established)                                #will give 2 counts, one for true and one for false
 ```
+
+
 # There are 122,503	trees that are esablished
 
 ## Question 16: Use mutate and case_when to add a new column to you data.frame that classifies each tree into the proper DBH_class. Once done, limit your dataset to the year 2007 and report the number of each class with count.
@@ -157,6 +219,8 @@ low	high	class
 2.5	10	 “sapling”
 10	30	 “pole”
 30	-	   “sawlog”
+
+
 ```{r}
 # case_when(column == value/"name" ~ "outcome", TRUE ~ "other outcome if not the 1st") 
 # if type is blank then the outcome is blank, otherwise outcome is diff.
@@ -181,9 +245,13 @@ tree_data2 <- tree_data2 %>%
 class_counts_2007 <- tree_data_2007 %>%
   count(DBH_class)
 ```
+
+
 # In 2007, there are 1,963 trees in the pole class(10-30cm), 252 in the sapling class (2.5-10cm), 76 in the sawlog class (30+cm), and none in the seedling class (0-2.5cm). 
 
 ## Question 17: Compute the mean DBH (in cm) and standard deviation of DBH (in cm) for all trees in 2007. Explain the values you found and their statistical meaning.
+
+
 ```{r}
 #summarize() collapses a data.frame to a single row. We can use summarize() to compute summary statistics for one or more columns in a data.frame. The first argument in summarize() is the data.frame and subsequent arguments define how rows should be collapsed.
 
@@ -196,9 +264,13 @@ tree_data2 %>%
   )
 
 ```
+
+
 # In 2007, the mean DBH(cm) of trees is 16.1cm and the standard deviation is 6.1 This means that the average diameter of breast height in that year was about 16cm. This makes sense considering that in the previous problem, most trees in 2007 were of the pole class, ranging from 10-30cm. The standard deviation shows that there is quite a bit of variability in the measurements of DBH from trees for that year, within 10 to 22cm. 
 
 ## Question 18: Compute the per species mean tree age using only those ages recorded in 2003. Identify the three species with the oldest mean age.
+
+
 ```{r}
  tree_data2 %>%
   filter(year == 2003) %>%  # Filter to include only data from 2003
@@ -208,9 +280,13 @@ tree_data2 %>%
   slice_head(n = 3)  
 
 ```
+
+
 # The three oldest tree species based off of mean age, in 2003, are the Thuja occidentalis (126 years old), Fraxinus nigra (83 years old), and the Pinus strobus(73 years old).
 
 ## Question 19: In a single summarize call, find the number of unique years with records in the data set along with the first and last year recorded?
+
+
 ```{r}
  tree_data2 %>%
   summarize( n_distinct(year),  # Count the number of distinct years
@@ -218,9 +294,13 @@ tree_data2 %>%
   max(year, na.rm = TRUE))    # Find the last (most recent) year
 
 ```
+
+
 # There are 111 distinctive years in the data, the minumum year is 1897 and the max year is 2007.
 
 ## Question 20: Determine the stands with the largest number of unique years recorded. Report all stands with largest (or tied with the largest) temporal record.
+
+
 ```{r}
 # first group by the stand column, calculate the number of unique years recorded for each stand using n_distinct(), and then filter to get the stands with the maximum number of unique years.
 tree_data2 %>%
@@ -228,9 +308,13 @@ tree_data2 %>%
   summarize(num_unique_years = n_distinct(year)) %>%  #Count the distinct years for each stand
   filter(num_unique_years == max(num_unique_years))  # Get stands with the largest number of unique years)
 ```
+
+
 # The stands with the largest temporal record are stand A1, D1, D2, D3, and F1. They are all tired for anumber of 111 unique years.
 
 ## Final Question: Use a combination of dplyr verbs to compute these values and report the 3 species with the fastest growth, and the 3 species with the slowest growth. (** You will need to use either lag() or diff() in your compuation. You can learn more about each in the Help pages)
+
+
 ```{r}
 tree_data3<-tree_data2 %>%
   arrange(treeID,year) %>%
@@ -250,10 +334,14 @@ tree_data3<-tree_data2 %>%
 tree_data3 %>% slice_head(n=3)
 tree_data3 %>% slice_tail(n=3)
 ```
+
+
 # The top three species with the highest average growth rate is Pinus resinosa (.36 cm/year), Populus tremuloides (.33 cm/year), and Pinus banksiana (.33 cm/year). The three species with the slowest average growth per year are the Quercus rubra (.17cm/year), Thuja occidentalis (.15cm/ year), and Larix laricina (.15 cm/year).
 
 # Here's an image of the fastest growing species, the Pinus resinosa (red pine)
 tree. Picture taken by Steven Katovich, USDA Forest Service
+
+
 ```{r}
 install.packages("jpeg")
 library(jpeg)
