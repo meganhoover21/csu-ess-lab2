@@ -1,20 +1,19 @@
 ---
 title: "tree-growth-lab2"
 author: "Megan Hoover"
-format:
-  html:
-    toc: true
+output:
+  html
+    self contained:true
 knitr:
   opts_chunk: 
     echo: true
     collapse: true
     comment: "#>"
-  
- 
 ---
 
 ## Question 1: Read in the Minnesota tree growth dataset. Use glimpse to understand the structure and names of the dataset. Decribe the structure and what you see in the dataset?
 ```{r}
+library(jpeg)
 library(tidyverse) #call tidyverse package
 tree_data<-read.csv(file.choose()) #read in the tree_dat csv and name
 glimpse(tree_data)
@@ -180,13 +179,10 @@ tree_data2 <- tree_data2 %>%
   ))
 
 # Filter the data for the year 2007 and count the number in each class
- tree_data2 %>%
+ class2007 <- tree_data2 %>%
   filter(year == 2007) %>%
-   count(DBH_class)
-
-# Use count() to get the number of each DBH_class in 2007
-class_counts_2007 <- tree_data_2007 %>%
-  count(DBH_class)
+   count(DBH_class) # Use count() to get the number of each DBH_class in 2007
+ 
 ```
 # In 2007, there are 1,963 trees in the pole class(10-30cm), 252 in the sapling class (2.5-10cm), 76 in the sawlog class (30+cm), and none in the seedling class (0-2.5cm). 
 
@@ -262,8 +258,6 @@ tree_data3 %>% slice_tail(n=3)
 # Here's an image of the fastest growing species, the Pinus resinosa (red pine)
 tree. Picture taken by Steven Katovich, USDA Forest Service
 ```{r}
-install.packages("jpeg")
-library(jpeg)
 image <-readJPEG("C:/Users/samho/Desktop/ESS330/github/minnesota-tree-growth-lab2/imgs/redpine-Steven_Katovich.jpg")
 
 plot(1:2, type="n", xlab="", ylab="", axes=FALSE)
